@@ -21,7 +21,6 @@ const GET_USER = gql`
                     name
                     url
                     avatarUrl
-                    id
                 }
             }
             following {
@@ -111,7 +110,7 @@ export default function Home() {
                                     {follower.name}
                                 </h1>
                                 <small>                                    
-                                    <a href={follower.url} className="underline underline-offset-2">{follower.login}</a>
+                                    <a href={`/${follower.login}`} className="underline underline-offset-2">{follower.login}</a>
                                 </small>
                             </div>
                         </div>
