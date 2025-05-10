@@ -2,11 +2,12 @@
 
 import { gql, useQuery } from "@apollo/client";
 import { motion } from "framer-motion";
-import { div } from "framer-motion/client";
+import LanguageDisplay from "./components/LanguageDisplay";
 
 const GET_USER = gql`
     query {
         viewer {
+            id
             login
             name
             bio
@@ -20,6 +21,7 @@ const GET_USER = gql`
                     name
                     url
                     avatarUrl
+                    id
                 }
             }
             following {
@@ -31,6 +33,9 @@ const GET_USER = gql`
                     name
                     url
                     description
+                    owner {
+                        id
+                    }
                     languages(first: 10) {
                         totalCount
                         edges {
@@ -50,26 +55,28 @@ const GET_USER = gql`
     }
 `;
 
+
 export default function Home() {
     const { loading, error, data } = useQuery(GET_USER);
 
     if (loading) return (
-        <div className="w-full h-full grid place-items-center">
+        <div className="w-full h-screen grid place-items-center">
             <div className="loader"></div>
         </div>
     );
     if (error) return <p>Error: {error.message}</p>;
     
-    const repos = data.viewer.repositories.nodes;
-    console.log(repos);
+    const id = data.viewer.id;
+    let repos = data.viewer.repositories.nodes;
+    repos = [...repos].reverse();
 
-    // console.log(data);
+    console.log(data);
     return (
         <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
-            className="w-full h-full flex flex-col gap-4"
+            className="w-full h-full flex flex-col gap-4 overflow-x-hidden"
         >
             <div className="pl-10 pt-10 flex gap-4">
                 <img
@@ -87,7 +94,7 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className="pl-8 w-full flex mt-4 grid grid-cols-[3fr_10fr] gap-8">
+            <div className="pl-8 w-full mt-4 grid grid-cols-[3fr_10fr] gap-8 overflow-x-hidden">
                 <div className="ml-4 flex flex-col gap-4">
                     <h1 className="text-2xl font-semibold">
                         Your followers
@@ -114,7 +121,8 @@ export default function Home() {
                     <h1 className="text-2xl font-semibold">
                         Your repositories
                     </h1>
-                    {repos.map((repo: any) => (
+                    {repos.map((repo: any) => 
+                    repo.owner.id == id && (
                         <div key={repo.name} className="flex flex-col gap-2 w-[90%]">
                             <h1 className="text-xl font-semibold">
                                 {repo.name}
@@ -122,8 +130,9 @@ export default function Home() {
                             <small>
                                 {repo.description}
                             </small>
+                            <LanguageDisplay langs={repo.languages.edges} />
                             <div className="flex gap-3">
-                                {repo.languages.edges.map((lang: any) => (
+                                {repo.languages.edges.map((lang: any) => 
                                     <div key={lang.node.name} className="flex items-center gap-1">
                                         <div
                                             className="w-3 h-3 rounded-full"
@@ -131,7 +140,7 @@ export default function Home() {
                                         ></div>
                                         <small>{lang.node.name}</small>
                                     </div>
-                                ))}
+                                )}
                             </div>
                             <div className="w-full bg-white h-[1px] mt-2"></div>
                         </div>

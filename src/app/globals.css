@@ -28,7 +28,9 @@ body {
                "Apple Color Emoji", "Segoe UI Emoji";
 }
 
-
+body {
+  overflow-x: hidden;
+}
 
 /* HTML: <div class="loader"></div> */
 .loader {
