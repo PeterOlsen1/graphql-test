@@ -6,57 +6,8 @@ import { motion } from "framer-motion";
 import { useRouter } from 'next/navigation';
 import LanguageDisplay from "../components/LanguageDisplay";
 import { useEffect } from 'react';
+import { GET_USER } from '@/lib/queries';
 
-//modify the query to get the user by login
-const GET_USER = (user: string) => gql`
-    query {
-        user (login: "${user}") {
-            id
-            login
-            name
-            bio
-            avatarUrl
-            url
-            location
-            followers(first: 100) {
-                totalCount
-                nodes {
-                    login
-                    name
-                    url
-                    avatarUrl
-                }
-            }
-            following {
-                totalCount
-            }
-            repositories(first: 100) {
-                totalCount
-                nodes {
-                    name
-                    url
-                    description
-                    owner {
-                        id
-                    }
-                    languages(first: 10) {
-                        totalCount
-                        edges {
-                            size
-                            node {
-                                name
-                                color
-                            }
-                        }
-                    }
-                }
-            }
-            starredRepositories {
-                totalCount
-            }
-        }
-    }
-`;
 
 export default function User() {
     const params = useParams();
