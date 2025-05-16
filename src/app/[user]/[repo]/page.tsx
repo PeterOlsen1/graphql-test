@@ -14,13 +14,25 @@ export default function Page() {
 
     const { loading, error, data } = useQuery(GET_REPO(user as string, repo as string));
     
-    if (loading || error || !data) {
+    if (loading) {
         return (
             <div className="w-full h-screen grid place-items-center">
                 <div className="loader"></div>
             </div>
         );
     }
+    
+    if (error) {
+        return (
+            <div className="w-full h-screen grid place-items-center">
+                <div className="text-2xl font-semibold">
+                    {error.message}
+                </div>  
+            </div>
+        )
+    }
+    
+    console.log(data);
 
     return (
         <div>

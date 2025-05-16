@@ -86,7 +86,7 @@ export default function User() {
                     {repos.map((repo: any) => 
                     repo.owner.id == id && (
                         <div key={repo.name} className="flex flex-col gap-2 w-[90%]">
-                            <h1 className="text-xl font-semibold">
+                            <h1 className="text-xl font-semibold cursor-pointer" onClick={() => router.push(`/${user}/${repo.name}`)}>
                                 {repo.name}
                             </h1>
                             <small>

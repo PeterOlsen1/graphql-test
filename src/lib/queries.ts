@@ -5,10 +5,21 @@ export const GET_REPO = (user: string, repo: string) => gql`
         repository(owner: "${user}", name: "${repo}") {
             id
             name
+            description
+            url
             owner {
                 login
                 avatarUrl
                 url
+            }
+            object(expression: "HEAD:") {
+                ... on Tree {
+                    entries {
+                        name
+                        type
+                        path
+                    }
+                }
             }
         }
     }
