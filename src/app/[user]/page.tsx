@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useRouter } from 'next/navigation';
 import LanguageDisplay from "../components/LanguageDisplay";
 import { useEffect } from 'react';
-import { GET_USER } from '@/lib/queries';
+import { GET_USER_FULL } from '@/lib/queries';
 
 
 export default function User() {
@@ -14,7 +14,7 @@ export default function User() {
     const router = useRouter();
     const { user } = params;
 
-    const { loading, error, data } = useQuery(GET_USER(user as string));
+    const { loading, error, data } = useQuery(GET_USER_FULL(user as string));
 
     useEffect(() => {
         if (error) {

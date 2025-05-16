@@ -25,7 +25,7 @@ export const GET_REPO = (user: string, repo: string) => gql`
     }
 `;
 
-export const GET_USER = (user: string) => gql`
+export const GET_USER_FULL = (user: string) => gql`
     query {
         user (login: "${user}") {
             id
@@ -71,6 +71,18 @@ export const GET_USER = (user: string) => gql`
             starredRepositories {
                 totalCount
             }
+        }
+    }
+`;
+
+export const GET_USER_SHORT = (user: string) => gql`
+    query {
+        user (login: "${user}") {
+            id
+            login
+            name
+            avatarUrl
+            url
         }
     }
 `;
