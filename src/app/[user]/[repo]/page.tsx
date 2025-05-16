@@ -4,7 +4,8 @@ import { useParams } from 'next/navigation';
 import { useQuery } from "@apollo/client";
 import { motion } from "framer-motion";
 import { useRouter } from 'next/navigation';
-import { GET_REPO } from '@/lib/queries';
+import { GET_REPO, GET_FILE } from '@/lib/queries';
+import { Marked } from 'marked';
 
 
 export default function Page() {
@@ -13,8 +14,9 @@ export default function Page() {
     const { user, repo } = params;
 
     const { loading, error, data } = useQuery(GET_REPO(user as string, repo as string));
+    const { loading: readmeLoading, error: readmeError, data: readmeData } = useQuery(GET_FILE(user as string, repo as string, "README.md"));
     
-    if (loading) {
+    if (loading || readmeLoading) {
         return (
             <div className="w-full h-screen grid place-items-center">
                 <div className="loader"></div>
@@ -22,7 +24,7 @@ export default function Page() {
         );
     }
     
-    if (error) {
+    if (error || readmeError) {
         return (
             <div className="w-full h-screen grid place-items-center">
                 <div className="text-2xl font-semibold">
@@ -35,8 +37,9 @@ export default function Page() {
     // console.log(data);
     const repoData = data.repository;
     const files = repoData.object.entries;
-    const repoEntryStyle = "flex gap-2 border border-[rgba(79,79,79,0.5)] p-2";
-    console.log(files);
+    const repoEntryStyle = "flex gap-1 border border-[rgba(79,79,79,0.5)] p-1 text-center";
+    const readmeText = readmeData.repository.object.text;
+    const md = new Marked();
 
     return (
         <motion.div 
@@ -58,7 +61,8 @@ export default function Page() {
                 </div>
             </div>
 
-            <div className="w-full flex flex-col justify-center items-center">
+            {/* main body div */}
+            <div className="w-full flex flex-col justify-center items-center overflow-hidden">
                 <div className="w-[80%]">
 
                     {/* folders */}
@@ -67,10 +71,10 @@ export default function Page() {
                             if (file.type === "tree") {
                                 return (
                                     <div key={index} className={repoEntryStyle}>
-                                        <svg style={{ filter: "invert(0.6)"}} viewBox='0 0 24 24' className="w-10 h-10 flex justify-center align-center">
+                                        <svg style={{ filter: "invert(0.6)"}} viewBox='0 0 30 30' className="w-10 h-10 grid relative top-[0.5em] left-[0.5em]">
                                             <path d="M1.75 1A1.75 1.75 0 0 0 0 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0 0 16 13.25v-8.5A1.75 1.75 0 0 0 14.25 3H7.5a.25.25 0 0 1-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75Z"></path>
                                         </svg>
-                                        <div className="text-left">
+                                        <div className="grid place-items-center">
                                             {file.name}
                                         </div>
                                     </div>
@@ -87,10 +91,10 @@ export default function Page() {
                             if (file.type === "blob") {
                                 return (
                                     <div key={index} className={repoEntryStyle}>
-                                        <svg style={{ filter: "invert(0.6)"}} viewBox='0 0 24 24' className="w-10 h-10 flex justify-center align-center">
+                                        <svg style={{ filter: "invert(0.6)"}} viewBox='0 0 30 30' className="w-10 h-10 grid relative top-[0.5em] left-[0.5em]">
                                             <path d="M2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0 1 13.25 16h-9.5A1.75 1.75 0 0 1 2 14.25Zm1.75-.25a.25.25 0 0 0-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 0 0 .25-.25V6h-2.75A1.75 1.75 0 0 1 9 4.25V1.5Zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-.011-.013-2.914-2.914-.013-.011Z"></path>
                                         </svg>
-                                        <div className="text-left">
+                                        <div className="grid place-items-center">
                                             {file.name}
                                         </div>
                                     </div>
@@ -102,6 +106,8 @@ export default function Page() {
                         })}
                     </div>
                 </div>
+
+                <div dangerouslySetInnerHTML={{ __html: md.parse(readmeText) }} />
             </div>
         </motion.div>
     );

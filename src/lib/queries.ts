@@ -25,6 +25,18 @@ export const GET_REPO = (user: string, repo: string) => gql`
     }
 `;
 
+export const GET_FILE = (user: string, repo: string, path: string) => gql`
+    query {
+        repository(owner: "${user}", name: "${repo}") {
+            object(expression: "main:README.md") {
+                ... on Blob {
+                    text
+                }
+            }
+        }
+    }
+`;
+
 export const GET_USER_FULL = (user: string) => gql`
     query {
         user (login: "${user}") {
